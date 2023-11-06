@@ -1,0 +1,138 @@
+---
+title: "LCARS-M2 analysis template"
+author: "N.N."
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    theme: united
+    toc_float: yes
+    toc: yes
+    number_sections: yes
+    code_folding: hide
+---
+
+# Requirements
+* R
+* Python (only for data decryption)
+
+
+# Setup
+
+* Place the **data file "study_data.csv"** obtained from the server download in the **folder** named **"data"**.
+* Place **key files "study.key" and "server.pub.key"** in the **keys folder** (you got these files from the server admin).
+* Note: The encryption ensures that the data can only be accessed by the study's admin and that the data have not been hampered with (mutual authentication).
+
+**Important note:** Data files (e.g. .csv), results (e.g. html) and key files should not be uploaded to version control systems (e.g. GitHub), unless you are okay with them being stored on these systems! These file extensions are **excluded** from upload (i.e. .csv, .html and .key). you can **modify** this behavior by editing **.gitignore**.
+
+
+## Install R packages
+
+Define required R packages.
+
+```{r}
+# R packages
+req_packages = c(
+  "readr",
+  "dplyr",
+  "DT",
+  "knitr",
+  "plotly",
+  "base64enc",
+  "sodium" # requires libsodium
+)
+```
+
+Install required packages for R if not yet installed.
+```{r}
+# Install if not yet installed and load R packages
+all_pkg = installed.packages()
+for (i in req_packages){
+  if(i %in% all_pkg[,"Package"] == FALSE){
+    utils::install.packages(i)
+  }
+}
+```
+
+Load packages.
+```{r message=FALSE, warning=FALSE}
+for (i in req_packages) {
+  base::require(i, character.only = TRUE)
+}
+```
+
+
+## Data decryption
+
+```{r}
+study_key = readr::read_file("keys/study.key")
+study_key = base64decode(study_key)
+
+server_pub_key = readr::read_file("keys/server.pub.key")
+server_pub_key = base64decode(server_pub_key)
+
+enc_data = readBin("data/scientific_dataset.csv.enc", what = "raw", n = 100000000000)[-(1:24)]
+
+nonce = readBin("data/scientific_dataset.csv.enc", what = "raw", n = 100000000000) [(1:24)]
+
+dec_data = sodium::auth_decrypt(bin = enc_data,
+                                key = study_key,
+                                pubkey = server_pub_key,
+                                nonce = nonce)
+
+scientific_dataset = read.csv(text = rawToChar(dec_data), sep = ";") 
+
+saveRDS(scientific_dataset, "data/scientific_dataset.RDS")
+write_csv(scientific_dataset, "data/scientific_dataset.csv")
+```
+
+# Prepare data
+Please modify/extend the script as needed.
+
+## Import data
+```{r message=FALSE}
+# Import
+all_data <- readr::read_delim("data/scientific_dataset.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+```
+
+
+## Inspect raw data
+The raw data comes in a long format, where every line represents just one value, with the respective information.
+```{r}
+base::dim(all_data)
+utils::head(all_data)
+```
+
+# Results
+
+## Study overview
+```{r}
+n_study_sites = all_data %>% dplyr::filter(!duplicated(study_site)) %>% base::nrow()
+n_participants = all_data %>% dplyr::filter(!duplicated(participant_pk)) %>% base::nrow()
+submissions_by_site = all_data %>%
+  dplyr::filter(!base::duplicated(c(base::paste(submission_pk)))) %>%
+  dplyr::select(study_site, visit_id) %>%
+  base::table() %>% 
+  base::as.data.frame.matrix() %>%
+  dplyr::as_tibble(rownames = "site")
+```
+
+In total, **`r n_study_sites` study sites** submitted data for this study, and data of **`r n_participants` participants** were included (participants with **at least one submission**).
+
+### Table: submissions by site
+```{r}
+submissions_by_site %>% knitr::kable()
+```
+**Table. Submissions by site.** Distribution of submissions per study site.
+
+
+### Figure: participants per site
+```{r fig.height=8, fig.width=10}
+pt_per_site = all_data %>%
+  dplyr::filter(!duplicated(participant_pk)) %>%
+  select(study_site) %>% table() %>%
+  dplyr::as_tibble()
+fig <- plotly::plot_ly(pt_per_site, labels = ~study_site, values = ~n, type = 'pie')
+fig
+```
+**Figure. Participants by site.** Number of participants per study site with at least one submission per participant.
