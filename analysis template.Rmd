@@ -8,17 +8,16 @@ output:
     toc_float: yes
     toc: yes
     number_sections: yes
-    code_folding: hide
+    code_folding: show
 ---
 
 # Requirements
 * R
-* Python (only for data decryption)
 
 
 # Setup
 
-* Place the **data file "study_data.csv"** obtained from the server download in the **folder** named **"data"**.
+* Place the **data file "scientific_dataset.csv.enc"** obtained from the server download in the **folder** named **"data"**.
 * Place **key files "study.key" and "server.pub.key"** in the **keys folder** (you got these files from the server admin).
 * Note: The encryption ensures that the data can only be accessed by the study's admin and that the data have not been hampered with (mutual authentication).
 
@@ -27,9 +26,9 @@ output:
 
 ## Install R packages
 
-Define required R packages.
+Define required R packages. Install required packages for R if not yet installed. Finally, load packages.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 # R packages
 req_packages = c(
   "readr",
@@ -40,21 +39,16 @@ req_packages = c(
   "base64enc",
   "sodium" # requires libsodium
 )
-```
 
-Install required packages for R if not yet installed.
-```{r message=FALSE, warning=FALSE}
-# Install if not yet installed and load R packages
+# Install, if not installed yet (from CRAN)
 all_pkg = installed.packages()
 for (i in req_packages){
   if(i %in% all_pkg[,"Package"] == FALSE){
     utils::install.packages(i)
   }
 }
-```
 
-Load packages.
-```{r message=FALSE, warning=FALSE}
+# Load pakages
 for (i in req_packages) {
   base::require(i, character.only = TRUE)
 }
@@ -108,6 +102,8 @@ read_decrpyt_data = function(study_key_file,
 Please modify/extend the script as needed.
 
 ## Import data
+
+Read and decrypt the data obtained from the server.
 ```{r message=FALSE}
 # Import
 all_data = read_decrpyt_data(study_key_file = "keys/study.key",
