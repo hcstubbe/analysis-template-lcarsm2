@@ -43,7 +43,7 @@ req_packages = c(
 ```
 
 Install required packages for R if not yet installed.
-```{r}
+```{r message=FALSE, warning=FALSE}
 # Install if not yet installed and load R packages
 all_pkg = installed.packages()
 for (i in req_packages){
@@ -61,29 +61,48 @@ for (i in req_packages) {
 ```
 
 
-## Data decryption
+## Additional functions
+
+### Data decryption
 
 ```{r}
-study_key = readr::read_file("keys/study.key")
-study_key = base64decode(study_key)
-
-server_pub_key = readr::read_file("keys/server.pub.key")
-server_pub_key = base64decode(server_pub_key)
-
-enc_data = readBin("data/scientific_dataset.csv.enc", what = "raw", n = 100000000000)[-(1:24)]
-
-nonce = readBin("data/scientific_dataset.csv.enc", what = "raw", n = 100000000000) [(1:24)]
-
-dec_data = sodium::auth_decrypt(bin = enc_data,
-                                key = study_key,
-                                pubkey = server_pub_key,
-                                nonce = nonce)
-
-scientific_dataset = read.csv(text = rawToChar(dec_data), sep = ";") 
-
-saveRDS(scientific_dataset, "data/scientific_dataset.RDS")
-write_csv(scientific_dataset, "data/scientific_dataset.csv")
+read_decrpyt_data = function(study_key_file,
+                 server_pub_key_file,
+                 encrypted_dataset_file,
+                 output_file,
+                 output_format, # "csv" or "rds"
+                 save_decrypted_data=FALSE
+                 ) {
+  study_key = readr::read_file(study_key_file)
+  study_key = base64decode(study_key)
+  
+  server_pub_key = readr::read_file(server_pub_key_file)
+  server_pub_key = base64decode(server_pub_key)
+  
+  enc_data = readBin(encrypted_dataset_file, what = "raw", n = 100000000000)[-(1:24)]
+  
+  nonce = readBin(encrypted_dataset_file, what = "raw", n = 100000000000) [(1:24)]
+  
+  dec_data = sodium::auth_decrypt(bin = enc_data,
+                                  key = study_key,
+                                  pubkey = server_pub_key,
+                                  nonce = nonce)
+  
+  scientific_dataset = read.csv(text = rawToChar(dec_data), sep = ";") 
+  
+  if (save_decrypted_data == TRUE){
+    if (output_format == "rds"){
+      saveRDS(scientific_dataset, output_file)
+    } else if (output_format == "csv"){
+      readr::write_csv(scientific_dataset, output_file)
+    }
+  }
+  
+  return(scientific_dataset)
+  
+}
 ```
+
 
 # Prepare data
 Please modify/extend the script as needed.
@@ -91,17 +110,14 @@ Please modify/extend the script as needed.
 ## Import data
 ```{r message=FALSE}
 # Import
-all_data <- readr::read_delim("data/scientific_dataset.csv", 
-    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+all_data = read_decrpyt_data(study_key_file = "keys/study.key",
+                                  server_pub_key_file = "keys/server.pub.key",
+                                  encrypted_dataset_file = "data/scientific_dataset.csv.enc",
+                                  output_file = "data/scientific_dataset.csv",
+                                  output_format = "csv",
+                                  save_decrypted_data=TRUE)
 ```
 
-
-## Inspect raw data
-The raw data comes in a long format, where every line represents just one value, with the respective information.
-```{r}
-base::dim(all_data)
-utils::head(all_data)
-```
 
 # Results
 
