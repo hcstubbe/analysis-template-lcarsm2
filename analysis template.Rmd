@@ -28,7 +28,7 @@ output:
 
 Define required R packages. Install required packages for R if not yet installed. Finally, load packages.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=TRUE}
 # R packages
 req_packages = c(
   "readr",
@@ -37,7 +37,8 @@ req_packages = c(
   "knitr",
   "plotly",
   "base64enc",
-  "sodium" # requires libsodium
+  "ggplot2",
+  "sodium" # requires libsodium library when pkg needs compiling.
 )
 
 # Install, if not installed yet (from CRAN)
@@ -65,7 +66,8 @@ read_decrpyt_data = function(study_key_file,
                  encrypted_dataset_file,
                  output_file,
                  output_format, # "csv" or "rds"
-                 save_decrypted_data=FALSE
+                 save_decrypted_data,
+                 max_size # max size in bytes (a value of 100.000.000 value corresponds to 100 MB, adjust if more is needed!)
                  ) {
   study_key = readr::read_file(study_key_file)
   study_key = base64decode(study_key)
@@ -73,9 +75,9 @@ read_decrpyt_data = function(study_key_file,
   server_pub_key = readr::read_file(server_pub_key_file)
   server_pub_key = base64decode(server_pub_key)
   
-  enc_data = readBin(encrypted_dataset_file, what = "raw", n = 100000000000)[-(1:24)]
+  enc_data = readBin(encrypted_dataset_file, what = "raw", n = max_size)[-(1:24)]
   
-  nonce = readBin(encrypted_dataset_file, what = "raw", n = 100000000000) [(1:24)]
+  nonce = readBin(encrypted_dataset_file, what = "raw", n = 24)
   
   dec_data = sodium::auth_decrypt(bin = enc_data,
                                   key = study_key,
@@ -111,7 +113,8 @@ all_data = read_decrpyt_data(study_key_file = "keys/study.key",
                                   encrypted_dataset_file = "data/scientific_dataset.csv.enc",
                                   output_file = "data/scientific_dataset.csv",
                                   output_format = "csv",
-                                  save_decrypted_data=TRUE)
+                                  save_decrypted_data=TRUE,
+                                  max_size = 100000000)
 ```
 
 
