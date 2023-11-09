@@ -1,5 +1,5 @@
 # lcars-m2-analysis
-This is a template for an analysis of lcars-m2 data.
+This is a template for the analysis of lcars-m2 data.
 
 ## Prerequisites
 - [R](https://cran.r-project.org/)
