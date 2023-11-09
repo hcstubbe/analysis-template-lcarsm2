@@ -4,6 +4,8 @@ This is a template for an analysis scripts for lcars-m2
 ## Prerequisites
 - [R](https://cran.r-project.org/)
 - [R Studio](https://posit.co/download/rstudio-desktop/) or similar (optional)
+
+On some operating systems, if sodium needs compiliation:
 - [libsodium](https://doc.libsodium.org/) if you need to comile the packe (e.g. on some linux distros)
 
 ## Usage
