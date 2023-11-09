@@ -1,12 +1,12 @@
 # lcars-m2-analysis
-This is a template for an analysis scripts for lcars-m2
+This is a template for an analysis of lcars-m2 data.
 
 ## Prerequisites
 - [R](https://cran.r-project.org/)
 - [R Studio](https://posit.co/download/rstudio-desktop/) or similar (optional)
 
 #### Optional: if sodium needs compiliation:
-- [libsodium](https://doc.libsodium.org/) if you need to comile the sodium package (e.g. on some linux distros).
+- [libsodium](https://doc.libsodium.org/) if you need to compile the sodium package (e.g. on some linux distros).
 
 ## Usage
 - Download your scientific dataset from the LCARS-M2 web app.
