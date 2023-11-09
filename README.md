@@ -6,7 +6,7 @@ This is a template for an analysis scripts for lcars-m2
 - [R Studio](https://posit.co/download/rstudio-desktop/) or similar (optional)
 
 - On some operating systems, and only if sodium needs compiliation:
--- [libsodium](https://doc.libsodium.org/) if you need to comile the packe (e.g. on some linux distros)
+  - [libsodium](https://doc.libsodium.org/) if you need to comile the packe (e.g. on some linux distros)
 
 ## Usage
 - Download your scientific dataset from the LCARS-M2 web app.
