@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/715200094.svg)](https://zenodo.org/doi/10.5281/zenodo.13166980)
 # lcars-m2-analysis
 This is a template for the analysis of lcars-m2 data.
 
