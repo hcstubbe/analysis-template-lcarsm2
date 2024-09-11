@@ -13,7 +13,7 @@ output:
 
 # Requirements
 * R
-* libsodium
+* libsodium (if the data needs to be decrypted)
 
 
 # Setup
