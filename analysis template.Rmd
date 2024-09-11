@@ -62,16 +62,15 @@ for (i in req_packages) {
 ### Data decryption
 
 ```{r}
-read_decrpyt_data = function(study_key_file,
-                 server_pub_key_file,
-                 encrypted_dataset_file,
+read_decrpyt_data = function(
+                 key_file,
                  output_file,
                  output_format, # "csv" or "rds"
                  save_decrypted_data,
                  max_size # max size in bytes (a value of 100.000.000 value corresponds to 100 MB, adjust if more is needed!)
                  ) {
   
-  keys <- read_delim("keys/keys.txt", delim = ":", 
+  keys <- read_delim(key_file, delim = ":", 
     escape_double = FALSE, col_names = FALSE, 
     trim_ws = TRUE) %>% as.data.frame()
   
@@ -114,8 +113,7 @@ Please modify/extend the script as needed.
 Read and decrypt the data obtained from the server.
 ```{r message=FALSE}
 # Import
-all_data = read_decrpyt_data(study_key_file = "keys/study.key",
-                                  server_pub_key_file = "keys/server.pub.key",
+all_data = read_decrpyt_data(key_file = "keys/keys.txt",
                                   encrypted_dataset_file = "data/scientific_dataset.csv.enc",
                                   output_file = "data/scientific_dataset.csv",
                                   output_format = "csv",
