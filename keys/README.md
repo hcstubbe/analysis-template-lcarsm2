@@ -2,8 +2,8 @@
 
 Create a file called `keys.txt` in this folder (make sure the filename is correct).
 
-You get your key upon first launching the server.
-Copy your study keys to this file like this:
+You get your keys upon first launching the study.
+Copy your study keys to the `keys.txt` file like this:
 
 ```
 Private study key: key-string
