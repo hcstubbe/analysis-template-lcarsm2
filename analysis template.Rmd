@@ -128,40 +128,6 @@ all_data <- read_csv("data/scientific_dataset.csv")
 ```
 
 
-# Results
-
-## Study overview
-```{r}
-n_study_sites = all_data %>% dplyr::filter(!duplicated(study_site)) %>% base::nrow()
-n_participants = all_data %>% dplyr::filter(!duplicated(participant_pk)) %>% base::nrow()
-submissions_by_site = all_data %>%
-  dplyr::filter(!base::duplicated(c(base::paste(submission_pk)))) %>%
-  dplyr::select(study_site, visit_id) %>%
-  base::table() %>% 
-  base::as.data.frame.matrix() %>%
-  dplyr::as_tibble(rownames = "site")
-```
-
-In total, **`r n_study_sites` study sites** submitted data for this study, and data of **`r n_participants` participants** were included (participants with **at least one submission**).
-
-### Table: submissions by site
-```{r}
-submissions_by_site %>% knitr::kable()
-```
-**Table. Submissions by site.** Distribution of submissions per study site.
-
-
-### Figure: participants per site
-```{r fig.height=4, fig.width=6}
-pt_per_site = all_data %>%
-  dplyr::filter(!duplicated(participant_pk)) %>%
-  select(study_site) %>% table() %>%
-  dplyr::as_tibble()
-fig <- plotly::plot_ly(pt_per_site, labels = ~study_site, values = ~n, type = 'pie')
-fig
-```
-**Figure. Participants by site.** Number of participants per study site with at least one submission per participant.
-
 
 ## Convert to wide format
 This code identifies all submissions. Converts the long dataset to wide, where submission of a visit has an "_1" after the visit id. 
@@ -213,4 +179,40 @@ for (col in names(all_data_wide)) {
 }
 all_data_wide
 ```
+
+
+
+# Results
+
+## Study overview
+```{r}
+n_study_sites = all_data %>% dplyr::filter(!duplicated(study_site)) %>% base::nrow()
+n_participants = all_data %>% dplyr::filter(!duplicated(participant_pk)) %>% base::nrow()
+submissions_by_site = all_data %>%
+  dplyr::filter(!base::duplicated(c(base::paste(submission_pk)))) %>%
+  dplyr::select(study_site, visit_id) %>%
+  base::table() %>% 
+  base::as.data.frame.matrix() %>%
+  dplyr::as_tibble(rownames = "site")
+```
+
+In total, **`r n_study_sites` study sites** submitted data for this study, and data of **`r n_participants` participants** were included (participants with **at least one submission**).
+
+### Table: submissions by site
+```{r}
+submissions_by_site %>% knitr::kable()
+```
+**Table. Submissions by site.** Distribution of submissions per study site.
+
+
+### Figure: participants per site
+```{r fig.height=4, fig.width=6}
+pt_per_site = all_data %>%
+  dplyr::filter(!duplicated(participant_pk)) %>%
+  select(study_site) %>% table() %>%
+  dplyr::as_tibble()
+fig <- plotly::plot_ly(pt_per_site, labels = ~study_site, values = ~n, type = 'pie')
+fig
+```
+**Figure. Participants by site.** Number of participants per study site with at least one submission per participant.
 
