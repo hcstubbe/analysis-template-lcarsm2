@@ -197,7 +197,7 @@ my_data = all_data %>%
 
 Stacked observations (one observation per row)
 ```{r eval=FALSE, include=FALSE}
-relevant_visits = "my_visit" # visit id
+relevant_visits = "v0_tablet_pat_tk" # visit id
 my_data = all_data %>%
     filter(grepl(relevant_visits, visit_id)) %>%
     pivot_wider(
@@ -205,6 +205,18 @@ my_data = all_data %>%
         id_cols = c(participant_pk, participant_pid, study_site, submission_n),
         values_from = value
     )
+```
+
+```{r eval=FALSE, include=FALSE}
+get_diagnoses_number = function(query_pat_pk, all_data) {
+  n_diagnoses = all_data %>% filter(participant_pk == query_pat_pk) %>% filter (grepl("icd10", variable_id)) %>% filter(!is.na(value)) %>% pull(value) %>% length()
+  return(n_diagnoses)
+}
+unique_pks = as.integer((levels(as.factor(all_data$participant_pk))))
+n_diag_df = data_frame(participant_pk = unique_pks, n_diagnoses = sapply(unique_pks, get_diagnoses_number, all_data=all_data))
+
+my_data = my_data %>% left_join(n_diag_df)
+
 ```
 
 
