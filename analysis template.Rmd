@@ -129,7 +129,7 @@ all_data <- read_csv("data/scientific_dataset.csv")
 
 
 
-## Convert to wide format
+## Wide format
 This code identifies all submissions. Converts the long dataset to wide, where submission of a visit has an "_1" after the visit id. 
 Three follow-up submissions translate to follow_up_1, follow_up_2, follow_up_3, and so on. Unique submissions will be renamed nonetheless like so: baseline_1.
 ```{r}
@@ -137,9 +137,11 @@ Three follow-up submissions translate to follow_up_1, follow_up_2, follow_up_3, 
 all_data$uidpk = paste0(all_data$participant_pk, all_data$visit_pk)
 uuidpk = all_data$uidpk[!duplicated(all_data$uidpk)]
 all_data$submission_n = NA
+all_data$i_usub_id = NA
 for (i in uuidpk) {
   ix = all_data$uidpk == i
-  i_usub_id = as.numeric(paste0(all_data$participant_pk[ix], all_data$visit_pk[ix], as.numeric(all_data$submission_date[ix])))
+  i_usub_id = as.numeric(paste0(all_data$participant_pk[ix], all_data$visit_pk[ix], all_data$submission_pk[ix], as.numeric(all_data$submission_date[ix])))
+  all_data$i_usub_id[ix] = i_usub_id
   all_data$submission_n[ix] = dense_rank(i_usub_id)
 }
 
@@ -177,9 +179,33 @@ for (col in names(all_data_wide)) {
         }
     }
 }
+write_csv(all_data_wide, "tip-all_data_wide.csv")
 all_data_wide
 ```
+### Examples
+All observations in wide (one patient per row)
+```{r eval=FALSE, include=FALSE}
+relevant_visits = "my_visit" # visit id
+my_data = all_data %>%
+    filter(grepl(relevant_visits, visit_id)) %>%
+    pivot_wider(
+        names_from = c(visit_id, submission_n, variable_id),
+        id_cols = c(participant_pk, participant_pid, study_site),
+        values_from = value
+    )
+```
 
+Stacked observations (one observation per row)
+```{r eval=FALSE, include=FALSE}
+relevant_visits = "my_visit" # visit id
+my_data = all_data %>%
+    filter(grepl(relevant_visits, visit_id)) %>%
+    pivot_wider(
+        names_from = c(visit_id, variable_id),
+        id_cols = c(participant_pk, participant_pid, study_site, submission_n),
+        values_from = value
+    )
+```
 
 
 # Results
