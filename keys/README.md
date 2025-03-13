@@ -1,6 +1,6 @@
 # Keys
 
-Create a file called `keys.txt` in this folder (make sure the filename is correct).
+Edit the `keys.txt` file in this folder adding your keys.
 
 You get your keys upon first launching the study.
 Copy your study keys to the `keys.txt` file like this:
