@@ -1,0 +1,2 @@
+Private study key: key-string
+Public server key: key-string
