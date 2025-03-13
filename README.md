@@ -12,7 +12,7 @@ This is a template for the analysis of lcars-m2 data.
 ## Usage
 - Download your scientific dataset from the LCARS-M2 web app.
 - Place the encypted dataset (`scientific_dataset.csv.enc`) in the data folder.
-- Place the keys in the keys.txt file (`study.key` and `server.pub.key`) in the keys folder (you get the keys on first study launch or from the server admin). This encryption is an additional layer of security to ensure that (1) the files can only be read by the authorized persons. (2) It ensures that the data is valid, since decryption will fail, if the files have been hampered with (mutual authentication).
+- Add the keys in the keys.txt file (`study.key` and `server.pub.key`) in the keys folder (you get the keys on first study launch or from the server admin). This encryption is an additional layer of security to ensure that (1) the files can only be read by the authorized persons. (2) It ensures that the data is valid, since decryption will fail, if the files have been hampered with (mutual authentication).
 - After decryption, the decrypted file will be saved as `scientific_dataset.csv` in the data folder.
 - Adjust the script as needed
 - Note: all values are stored as text in the decrypted csv file. Each variable will need to be converted into the respective type as specified by the `variable_type`.
