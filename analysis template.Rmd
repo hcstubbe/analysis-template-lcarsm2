@@ -179,7 +179,7 @@ for (col in names(all_data_wide)) {
         }
     }
 }
-write_csv(all_data_wide, "tip-all_data_wide.csv")
+write_csv(all_data_wide, "all_data_wide.csv")
 all_data_wide
 ```
 ### Examples
