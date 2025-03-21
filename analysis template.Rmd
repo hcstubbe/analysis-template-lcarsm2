@@ -134,7 +134,7 @@ This code identifies all submissions. Converts the long dataset to wide, where s
 Three follow-up submissions translate to follow_up_1, follow_up_2, follow_up_3, and so on. Unique submissions will be renamed nonetheless like so: baseline_1.
 ```{r}
 # Identify submissions
-all_data$uidpk = paste0(all_data$participant_pk, all_data$visit_pk)
+all_data$uidpk = paste(all_data$participant_pk, all_data$visit_pk, sep = "_")
 uuidpk = all_data$uidpk[!duplicated(all_data$uidpk)]
 all_data$submission_n = NA
 all_data$i_usub_id = NA
