@@ -197,34 +197,8 @@ all_data_wide <- all_data %>%
         names_from = c(visit_id, submission_n, variable_id),
         id_cols = c(participant_pk, participant_pid, study_site),
         values_from = value
-    )
+    ) %>% convert_types()
 
-# Define input types (as in lcarsm2/ecrf/models.py)
-input_types <- c(
-  "NUM" = "numeric",
-  "CHAR" = "character",
-  "DATE" = "Date",
-  "TIME" = "character",
-  "BOOL" = "logical",
-  "CHOICE" = "character",
-  "RADIO" = "character"
-)
-
-# Apply correct data types
-for (col in names(all_data_wide)) {
-    if (col %in% names(input_types)) {
-        type <- input_types[all_data_wide[["variable_type"]][col]]
-        if (type == "numeric") {
-            all_data_wide[[col]] <- as.numeric(all_data_wide[[col]])
-        } else if (type == "Date") {
-            all_data_wide[[col]] <- as.Date(all_data_wide[[col]])
-        } else if (type == "logical") {
-            all_data_wide[[col]] <- as.logical(all_data_wide[[col]])
-        } else {
-            all_data_wide[[col]] <- as.character(all_data_wide[[col]])
-        }
-    }
-}
 write_csv(all_data_wide, "all_data_wide.csv")
 all_data_wide
 ```
@@ -238,7 +212,7 @@ my_data = all_data %>%
         names_from = c(visit_id, submission_n, variable_id),
         id_cols = c(participant_pk, participant_pid, study_site),
         values_from = value
-    )
+    ) %>% convert_types()
 ```
 
 Stacked observations (one observation per row)
@@ -250,7 +224,7 @@ my_data = all_data %>%
         names_from = c(visit_id, variable_id),
         id_cols = c(participant_pk, participant_pid, study_site, submission_n),
         values_from = value
-    )
+    ) %>% convert_types()
 ```
 
 ```{r eval=FALSE, include=FALSE}
