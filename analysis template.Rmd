@@ -58,7 +58,53 @@ for (i in req_packages) {
 ```
 
 
+
 ## Additional functions
+
+```{r}
+# Create a function to convert column types and remove the prefix
+convert_types <- function(df) {
+  # Define input types (mapping prefixes to data types)
+  input_types <- c(
+    "NUM" = "numeric",
+    "CHA" = "character",
+    "DAT" = "Date",
+    "TIM" = "character",
+    "BOO" = "logical",
+    "CHO" = "character",
+    "RAD" = "character"
+  )
+
+  for (col in names(df)) {
+    # Check if the column name starts with one of the recognized prefixes (prefix + underscore)
+    if (grepl("^(NUM|CHA|DAT|TIM|BOO|CHO|RAD)_", col)) {
+      # Extract the three-letter prefix
+      prefix <- substr(col, 1, 3)
+      # Get the target data type from input_types
+      type <- input_types[prefix]
+      
+      # Convert the column to its specified type
+      if (type == "numeric") {
+        df[[col]] <- as.numeric(df[[col]])
+      } else if (type == "Date") {
+        df[[col]] <- as.Date(df[[col]])
+      } else if (type == "logical") {
+        df[[col]] <- as.logical(df[[col]])
+      } else {
+        df[[col]] <- as.character(df[[col]])
+      }
+      
+      # Remove the prefix and the following underscore from the column name
+      new_col_name <- sub("^(NUM|CHA|DAT|TIM|BOO|CHO|RAD)_", "", col)
+      names(df)[names(df) == col] <- new_col_name
+    } else {
+      message("Column ", col, " does not match a recognized prefix pattern.")
+    }
+  }
+  return(df)
+}
+
+```
 
 ### Data decryption
 
